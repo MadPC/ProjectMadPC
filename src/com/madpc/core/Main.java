@@ -5,6 +5,8 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 import com.madpc.core.exceptions.ResolutionException;
+import com.madpc.core.world.WorldHandler;
+import com.madpc.rendering.core.Renderer;
 
 public class Main implements Runnable{
 	
@@ -30,6 +32,8 @@ public class Main implements Runnable{
 		m.run();
 	}
 
+	private Renderer g = new Renderer();
+	
 	@Override
 	public void run() {
 		try
@@ -41,10 +45,13 @@ public class Main implements Runnable{
 		{
 			e.printStackTrace();
 		}
+		WorldHandler.instance.registerWorld(0, (Object)null);
 		
 		while (!Display.isCloseRequested())
 		{
-			
+			g.render();
+			Display.update();
+			Display.sync(60);
 		}
 	}
 	
