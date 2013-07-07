@@ -7,14 +7,22 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
+import org.lwjgl.util.vector.Matrix4f;
 
 
 public class GLProgrammer
 {
+	
+	private static float fFrustumScale = 1.0f;
+	private static float fzNear = 0.5f;
+	private static float fzFar = 3.0f;
+	
+	private static Matrix4f camToClip = new Matrix4f();
+	private static FloatBuffer convBuff = BufferUtils.createFloatBuffer(16);
 	
 	public static int buildProgram(String vertex, String frag)
 	{
@@ -22,30 +30,50 @@ public class GLProgrammer
 		
 		int[] shaders = genShaders(vertex, frag);
 		
-		prog = GL20.glCreateProgram();
+		prog = glCreateProgram();
 		
 		for (int i : shaders)
 		{
-			GL20.glAttachShader(prog, i);
+			glAttachShader(prog, i);
 		}
 		
-		GL20.glLinkProgram(prog);
+		glLinkProgram(prog);
 		if (glGetProgrami(prog, GL_LINK_STATUS) == GL11.GL_FALSE) 
 		{
-			throw new RuntimeException("could not link program. Reason: " + glGetProgramInfoLog(prog, 1000));
+			throw new RuntimeException("Could not link program. Reason: " + glGetProgramInfoLog(prog, 1000));
 		}
 		
 		// perform general validation that the program is usable
 		glValidateProgram(prog);
 		if (glGetProgrami(prog, GL_VALIDATE_STATUS) == GL11.GL_FALSE)
 		{
-			throw new RuntimeException("could not validate program. Reason: " + glGetProgramInfoLog(prog, 1000));			
+			throw new RuntimeException("Could not validate program. Reason: " + glGetProgramInfoLog(prog, 1000));			
 		}
+		
+		glUseProgram(prog);
+		
+		camToClip.m00 = fFrustumScale / (800 / (float)600);
+		camToClip.m11 = fFrustumScale;
+		camToClip.m22 = (fzFar + fzNear) / (fzNear - fzFar);
+		camToClip.m23 = (2 * fzFar * fzNear) / (fzNear - fzFar);
+		camToClip.m32 = -1.0f;
+		
+		convBuff.clear();
+		camToClip.store(convBuff);
+		convBuff.flip();
+		
+		int unif = glGetUniformLocation(prog, "perspectiveMatrix");
+		
+		//System.out.println(unif);
+		
+		glUniformMatrix4(unif, false, convBuff);
+		
+		glUseProgram(0);
 		
 		for (int i : shaders)
 		{
-			GL20.glDetachShader(prog, i);
-			GL20.glDeleteShader(i);
+			glDetachShader(prog, i);
+			glDeleteShader(i);
 		}
 		
 		return prog;
@@ -55,24 +83,24 @@ public class GLProgrammer
 	{
 		int[] ret = new int[2];
 		
-		ret[0] = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
-		GL20.glShaderSource(ret[0], readFile(vertex));
+		ret[0] = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(ret[0], readFile(vertex));
 		
-		GL20.glCompileShader(ret[0]);
+		glCompileShader(ret[0]);
 		// acquire compilation status
-	 	int shaderStatus = glGetShaderi(ret[0], GL20.GL_COMPILE_STATUS);
+	 	int shaderStatus = glGetShaderi(ret[0], GL_COMPILE_STATUS);
 	 	// check whether compilation was successful
 	 	if( shaderStatus == GL11.GL_FALSE)
 	 	{
 	 		throw new IllegalStateException("compilation error for shader ["+vertex+"]. Reason: " + glGetShaderInfoLog(ret[0], 1000));
 	 	}
 		
-		ret[1] = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);
-		GL20.glShaderSource(ret[1], readFile(frag));
+		ret[1] = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(ret[1], readFile(frag));
 		
-		GL20.glCompileShader(ret[1]);
+		glCompileShader(ret[1]);
 		// acquire compilation status
-	 	shaderStatus = glGetShaderi(ret[1], GL20.GL_COMPILE_STATUS);
+	 	shaderStatus = glGetShaderi(ret[1], GL_COMPILE_STATUS);
 	 	// check whether compilation was successful
 	 	if( shaderStatus == GL11.GL_FALSE)
 	 	{
