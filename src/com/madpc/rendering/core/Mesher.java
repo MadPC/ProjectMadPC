@@ -29,7 +29,7 @@ public class Mesher
 	private static final float REAR_EXTENT = -1.75f;
 	
 	private static final float[] CUBE = new float[] {
-	/*//	 X		Y	 Z
+	//	 X		Y	 Z
 		0.0f, 0.0f, 0.0f, //TOP LEFT
 		0.0f, -1.0f, 0.0f,//BOTTOM LEFT
 		1.0f, 0.0f, 0.0f, //TOP RIGHT
@@ -38,9 +38,9 @@ public class Mesher
 		0.0f, 0.0f, -1.0f, //TOP LEFT
 		0.0f, -1.0f, -1.0f,//BOTTOM LEFT
 		1.0f, 0.0f, -1.0f, //TOP RIGHT
-		1.0f, -1.0f, -1.0f,//BOTTOM RIGHT*/
+		1.0f, -1.0f, -1.0f,//BOTTOM RIGHT
 		
-		LEFT_EXTENT,	TOP_EXTENT,		REAR_EXTENT,
+		/*LEFT_EXTENT,	TOP_EXTENT,		REAR_EXTENT,
 		LEFT_EXTENT,	MIDDLE_EXTENT,	FRONT_EXTENT,
 		RIGHT_EXTENT,	MIDDLE_EXTENT,	FRONT_EXTENT,
 		RIGHT_EXTENT,	TOP_EXTENT,		REAR_EXTENT, //12
@@ -85,14 +85,14 @@ public class Mesher
 		BOTTOM_EXTENT,	RIGHT_EXTENT,	REAR_EXTENT,
 		TOP_EXTENT,		RIGHT_EXTENT,	REAR_EXTENT, //12
 		TOP_EXTENT,		LEFT_EXTENT,	REAR_EXTENT,
-		BOTTOM_EXTENT,	LEFT_EXTENT,	REAR_EXTENT
+		BOTTOM_EXTENT,	LEFT_EXTENT,	REAR_EXTENT*/
 	};
 	
 	private static final short[] NORMALIZE_INDICES = new short[] {
-		/*0, 3, 1,	0, 2, 3,
-		4, 7, 5,	4, 6, 7*/
+		0, 3, 1,	0, 2, 3,
+		4, 7, 5,	4, 6, 7
 		
-		0, 2, 1,
+		/*0, 2, 1,
 		3, 2, 0,
 
 		4, 5, 6,
@@ -102,7 +102,7 @@ public class Mesher
 		11, 13, 12,
 
 		14, 16, 15,
-		17, 16, 14,
+		17, 16, 14,*/
 	};
 	
 	/**

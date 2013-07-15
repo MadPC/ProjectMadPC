@@ -53,7 +53,7 @@ public class Meshed
 
 	public int getIndiceLength()
 	{
-		return 0;
+		return IndiceLength;
 	}
 	
 	public void setIndiceLength(int indiceLength)

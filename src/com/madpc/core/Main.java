@@ -42,6 +42,9 @@ public class Main implements Runnable{
 	
 	@Override
 	public void run() {
+		/**
+		 * Get the path of the fiels for shaderloading
+		 */
 		String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		try
 		{

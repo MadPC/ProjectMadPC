@@ -19,6 +19,7 @@ import com.madpc.rendering.data.Meshed;
 
 public class Renderer
 {
+	private static final int	BLOCKSIZE	= 32;
 	private Mesher mesh;
 	private int normProgram;
 	private static int WIDTH;
@@ -58,9 +59,12 @@ public class Renderer
 		//glEnable(GL_DEPTH_CLAMP);
 		
 		//Setting to 1.0f is useless, but they will be needed at some point
-		//off.m00 = 1.0f;
-		//off.m11 = 1.0f;
-		//off.m22 = 1.0f;
+		off.m00 = 1.0f;
+		off.m11 = 1.0f;
+		off.m22 = 0.5f;
+		
+		//off.m03 = 0.0f;
+		
 		offb.clear();
 		off.store(offb);
 		offb.flip();
@@ -76,27 +80,30 @@ public class Renderer
 		
 		//System.out.println(offsetloc);
 		
-		glUniform3f(offsetloc, 0.5f, 0.5f, 0.0f);
-		
-		//glUniformMatrix4(offsetloc, false, offb);
+		glUniformMatrix4(offsetloc, false, offb);
 		
 		World wo = WorldHandler.instance.getWorld(0);
 		if (wo != null)
 		{
-			Meshed m = mesh.getMesh(0);
+			int highX = (WIDTH / 2 / BLOCKSIZE);
+			int highY = (HEIGHT / 2 / BLOCKSIZE);
 			
-			GL30.glBindVertexArray(m.getVao());
-			glDrawElements(GL_TRIANGLES, m.getIndiceLength(), GL_UNSIGNED_SHORT, 0);
-			GL30.glBindVertexArray(0);
-			
-			/*for (int x = -400; x < 401; x++)
+			for (int x = -highX; x < highX + 1; x++)
 			{
-				for (int y = -300; y < 301; y++)
+				for (int y = -highY; y < highY + 1; y++)
 				{
 					for (int z = -1; z < 2; z++)
 					{
 						Block b = wo.getBlockAt(x, y, z);
 						Meshed m = mesh.getMesh(0);
+						
+						offb.clear();
+						off.m03 = ((float)x * BLOCKSIZE) / (float)WIDTH;
+						off.m13 = ((float)y * BLOCKSIZE) / (float)HEIGHT;
+						off.store(offb);
+						offb.flip();
+						
+						glUniformMatrix4(offsetloc, false, offb);
 						
 						GL30.glBindVertexArray(m.getVao());
 						glDrawElements(GL_TRIANGLES, m.getIndiceLength(), GL_UNSIGNED_SHORT, 0);
@@ -104,8 +111,9 @@ public class Renderer
 						
 					}
 				}
-			}*/
+			}
 		}
+		
 		glUseProgram(0);
 	}
 	
